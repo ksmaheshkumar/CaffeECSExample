@@ -109,5 +109,11 @@ cp ../../CaffeECSExample/qExample.py .
 python qExample.py
 
 
+# get a Java on
+sudo apt-get -y install default-jre
+sudo apt-get -y install default-jdk
+
+
+
 
 
