@@ -1,0 +1,101 @@
+
+# 6-20-2015
+#
+# Trying to run Caffe on EC2
+# Would be shorter if we had used Anaconda
+# did not get CUDA to work (could not apply driver)
+#
+# https://news.ycombinator.com/item?id=9749660
+# http://rocknrollnerd.github.io/ml/2015/05/27/leopard-sofa.html
+# http://nbviewer.ipython.org/github/BVLC/caffe/blob/master/examples/classification.ipynb
+# http://caffe.berkeleyvision.org/installation.html
+
+
+# Maybe try a g2.8xlarge instance (about $2.60 per hour)
+# OS: Ubuntu Server 14.04 LTS (HVM), SSD Volume Type - ami-5189a661
+
+# On your local machine, ssh to EC2 intance
+# ssh -i KEY.PEM  ubuntu@IPADDRESS
+
+
+# ON EC2 instance, install the stuff you need
+# also copy the contents of this repository to your instance
+
+# From: http://caffe.berkeleyvision.org/install_apt.html
+sudo apt-get -y  update
+sudo apt-get -y  install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libboost-all-dev libhdf5-serial-dev
+sudo apt-get -y  install libatlas-base-dev 
+sudo apt-get -y  install libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler
+sudo apt-get -y  install python-dev
+
+# From: https://github.com/BVLC/caffe
+sudo apt-get -y  install git
+git clone https://github.com/BVLC/caffe.git
+
+# From: http://rocknrollnerd.github.io/ml/2015/05/27/leopard-sofa.html
+# http://nbviewer.ipython.org/github/BVLC/caffe/blob/master/examples/classification.ipynb
+sudo apt-get -y install python-pip
+sudo pip install numpy matplotlib
+sudo pip install "ipython[all]"
+
+
+export PYTHONPATH=/home/ubuntu/caffe/python:$PYTHONPATH
+
+# CUDO did not work
+#  # From: http://askubuntu.com/questions/451672/installing-and-testing-cuda-in-ubuntu-14-04
+#  sudo apt-get -y install build-essential
+#  # From: https://developer.nvidia.com/cuda-downloads
+#  wget http://developer.download.nvidia.com/compute/cuda/7_0/Prod/local_installers/cuda_7.0.28_linux.run
+#  mkdir nvidia_installers
+#  sudo bash ./cuda_7.0.28_linux.run -extract=~/nvidia_installers
+#  sudo apt-get --purge remove nvidia-*
+#  cd ~/nvidia_installers
+#  sudo service lightdm stop
+#  sudo killall Xorg
+#  sudo ./NVIDIA-Linux-x86_64-346.46.run
+
+
+# From: http://caffe.berkeleyvision.org/installation.html#compilation
+cd caffe
+cp Makefile.config.example Makefile.config
+# Copy Makefile.patch from this repository into current directory
+patch Makefile.config Makefile.patch
+make all
+# make test
+# make runtest
+make pycaffe
+
+# From http://stackoverflow.com/questions/2213551/installing-scipy-with-pip
+sudo apt-get -y install gfortran
+sudo pop install cython
+sudo pip install scipy
+# From https://github.com/BVLC/caffe/issues/50
+sudo pip install scikit-image
+
+# From https://groups.google.com/forum/#!topic/caffe-users/9Q10WkpCGxs
+sudo pip install protobuf
+
+
+# From: https://github.com/BVLC/caffe/issues/1988
+export LD_LIBRARY_PATH=/home/ubuntu/caffe/.build_release/lib/:$LD_LIBRARY_PATH
+
+
+# Ingore 1394 warning
+# http://stackoverflow.com/questions/12689304/ctypes-error-libdc1394-error-failed-to-initialize-libdc1394
+
+../scripts/download_model_binary.py ../models/bvlc_reference_caffenet
+
+# to get codes:
+pushd caffe/data/ilsvrc12
+bash bash get_ilsvrc_aux.sh
+# look at synset_words.txt
+popd
+
+cd examples
+
+# run example (copy example from repository)
+python qExample.py
+
+
+
+

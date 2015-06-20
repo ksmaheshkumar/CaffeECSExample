@@ -1,0 +1,25 @@
+--- Makefile.config.example	2015-06-20 16:54:55.793124000 +0000
++++ Makefile.config	2015-06-20 17:56:59.679082000 +0000
+@@ -2,10 +2,10 @@
+ # Contributions simplifying and improving our build system are welcome!
+ 
+ # cuDNN acceleration switch (uncomment to build with cuDNN).
+-# USE_CUDNN := 1
++USE_CUDNN := 0
+ 
+ # CPU-only switch (uncomment to build without GPU support).
+-# CPU_ONLY := 1
++CPU_ONLY := 1
+ 
+ # To customize your choice of compiler, uncomment and set the following.
+ # N.B. the default for Linux is g++ and the default for OSX is clang++
+@@ -49,7 +49,8 @@
+ # NOTE: this is required only if you will compile the python interface.
+ # We need to be able to find Python.h and numpy/arrayobject.h.
+ PYTHON_INCLUDE := /usr/include/python2.7 \
+-		/usr/lib/python2.7/dist-packages/numpy/core/include
++		/usr/lib/python2.7/dist-packages/numpy/core/include \
++	/usr/local/lib/python2.7/dist-packages/numpy/core/include
+ # Anaconda Python distribution is quite popular. Include path:
+ # Verify anaconda location, sometimes it's in root.
+ # ANACONDA_HOME := $(HOME)/anaconda
