@@ -24,12 +24,14 @@
 # From: http://caffe.berkeleyvision.org/install_apt.html
 sudo apt-get -y  update
 sudo apt-get -y  install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libboost-all-dev libhdf5-serial-dev
-sudo apt-get -y  install libatlas-base-dev 
+sudo apt-get -y  install libatlas-base-dev
+sudo apt-get -y install gfortran
 sudo apt-get -y  install libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler
 sudo apt-get -y  install python-dev
 
 # From: https://github.com/BVLC/caffe
 sudo apt-get -y  install git
+sudo apt-get -y  install emacs
 git clone https://github.com/BVLC/caffe.git
 
 # From: http://rocknrollnerd.github.io/ml/2015/05/27/leopard-sofa.html
@@ -41,7 +43,19 @@ sudo pip install "ipython[all]"
 
 export PYTHONPATH=/home/ubuntu/caffe/python:$PYTHONPATH
 
-# CUDO did not work
+
+# From http://stackoverflow.com/questions/2213551/installing-scipy-with-pip
+sudo pip install cython
+sudo pip install scipy
+# From https://github.com/BVLC/caffe/issues/50
+sudo pip install scikit-image
+
+# From https://groups.google.com/forum/#!topic/caffe-users/9Q10WkpCGxs
+sudo pip install protobuf
+
+
+
+# CUDA did not work
 #  # From: http://askubuntu.com/questions/451672/installing-and-testing-cuda-in-ubuntu-14-04
 #  sudo apt-get -y install build-essential
 #  # From: https://developer.nvidia.com/cuda-downloads
@@ -55,45 +69,43 @@ export PYTHONPATH=/home/ubuntu/caffe/python:$PYTHONPATH
 #  sudo ./NVIDIA-Linux-x86_64-346.46.run
 
 
+# From: https://github.com/BVLC/caffe/issues/1988
+export LD_LIBRARY_PATH=/home/ubuntu/caffe/.build_release/lib/:$LD_LIBRARY_PATH
+
+git clone https://github.com/JohnMount/CaffeECSExample.git
+
+
 # From: http://caffe.berkeleyvision.org/installation.html#compilation
 cd caffe
 cp Makefile.config.example Makefile.config
-# Copy Makefile.patch from this repository into current directory
-patch Makefile.config Makefile.patch
+patch Makefile.config ../CaffeECSExample/Makefile.patch
 make all
 # make test
 # make runtest
 make pycaffe
 
-# From http://stackoverflow.com/questions/2213551/installing-scipy-with-pip
-sudo apt-get -y install gfortran
-sudo pop install cython
-sudo pip install scipy
-# From https://github.com/BVLC/caffe/issues/50
-sudo pip install scikit-image
-
-# From https://groups.google.com/forum/#!topic/caffe-users/9Q10WkpCGxs
-sudo pip install protobuf
-
-
-# From: https://github.com/BVLC/caffe/issues/1988
-export LD_LIBRARY_PATH=/home/ubuntu/caffe/.build_release/lib/:$LD_LIBRARY_PATH
-
 
 # Ingore 1394 warning
 # http://stackoverflow.com/questions/12689304/ctypes-error-libdc1394-error-failed-to-initialize-libdc1394
 
-../scripts/download_model_binary.py ../models/bvlc_reference_caffenet
+# get model
+scripts/download_model_binary.py models/bvlc_reference_caffenet
 
 # to get codes:
-pushd caffe/data/ilsvrc12
-bash bash get_ilsvrc_aux.sh
+pushd data/ilsvrc12
+bash get_ilsvrc_aux.sh
 # look at synset_words.txt
+# fgrep -n crab synset_words.txt 
+# 119:n01978287 Dungeness crab, Cancer magister
+# 120:n01978455 rock crab, Cancer irroratus
+# 121:n01980166 fiddler crab
+# 122:n01981276 king crab, Alaska crab, Alaskan king crab, Alaska king crab, Paralithodes camtschatica
+# 126:n01986214 hermit crab
 popd
 
 cd examples
-
-# run example (copy example from repository)
+cp ../../CaffeECSExample/qExample.py .
+# run example 
 python qExample.py
 
 
