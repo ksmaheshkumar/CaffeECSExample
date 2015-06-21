@@ -21,6 +21,42 @@
 # ON EC2 instance, install the stuff you need
 # also copy the contents of this repository to your instance
 
+
+
+##  # CUDA did not work
+##  # From
+##  #  http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using_cluster_computing.html#gpu-operating-systems
+##  sudo apt-get -y update
+##  sudo reboot
+##  # from https://wiki.ubuntu.com/Kernel/BuildYourOwnKernel
+##  sudo apt-get -y install dpkg-dev
+##  sudo apt-get -y source linux-image-$(uname -r)
+##  sudo apt-get -y build-dep linux-image-$(uname -r)
+##  cd linux-3.13.0
+##  sudo chmod a+x debian/scripts/*
+##  sudo chmod a+x debian/scripts/misc/*
+##  sudo fakeroot debian/rules clean
+##  sudo fakeroot debian/rules binary-headers binary-generic
+##  sudo reboot
+##  sudo apt-get -y update
+##  #  For G2 instances I think the Nvidia URL is: http://us.download.nvidia.com/XFree86/Linux-x86_64/352.21/NVIDIA-Linux-x86_64-352.21.run
+##  wget http://us.download.nvidia.com/XFree86/Linux-x86_64/352.21/NVIDIA-Linux-x86_64-352.21.run
+##  sudo /bin/bash ./NVIDIA-Linux-x86_64-352.21.run 
+##  
+##  #  # From: http://askubuntu.com/questions/451672/installing-and-testing-cuda-in-ubuntu-14-04
+##  #  sudo apt-get -y install build-essential
+##  #  # From: https://developer.nvidia.com/cuda-downloads
+##  #  wget http://developer.download.nvidia.com/compute/cuda/7_0/Prod/local_installers/cuda_7.0.28_linux.run
+##  #  mkdir nvidia_installers
+##  #  sudo bash ./cuda_7.0.28_linux.run -extract=~/nvidia_installers
+##  #  sudo apt-get --purge remove nvidia-*
+##  #  cd ~/nvidia_installers
+##  #  sudo service lightdm stop
+##  #  sudo killall Xorg
+##  #  sudo ./NVIDIA-Linux-x86_64-346.46.run
+##  
+
+
 # From: http://caffe.berkeleyvision.org/install_apt.html
 sudo apt-get -y  update
 sudo apt-get -y  install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libboost-all-dev libhdf5-serial-dev
@@ -55,18 +91,6 @@ sudo pip install protobuf
 
 
 
-# CUDA did not work
-#  # From: http://askubuntu.com/questions/451672/installing-and-testing-cuda-in-ubuntu-14-04
-#  sudo apt-get -y install build-essential
-#  # From: https://developer.nvidia.com/cuda-downloads
-#  wget http://developer.download.nvidia.com/compute/cuda/7_0/Prod/local_installers/cuda_7.0.28_linux.run
-#  mkdir nvidia_installers
-#  sudo bash ./cuda_7.0.28_linux.run -extract=~/nvidia_installers
-#  sudo apt-get --purge remove nvidia-*
-#  cd ~/nvidia_installers
-#  sudo service lightdm stop
-#  sudo killall Xorg
-#  sudo ./NVIDIA-Linux-x86_64-346.46.run
 
 
 # From: https://github.com/BVLC/caffe/issues/1988
