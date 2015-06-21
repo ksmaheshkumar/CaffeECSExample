@@ -1,6 +1,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from skimage.restoration import denoise_tv_chambolle
 
 # Make sure that caffe is on the python path:
 caffe_root = '../'  # this file is expected to be in {caffe_root}/examples
@@ -27,6 +28,7 @@ net = caffe.Classifier(MODEL_FILE, PRETRAINED,
                        image_dims=(256, 256))
 
 input_image = caffe.io.load_image(IMAGE_FILE)
+input_image = denoise_tv_chambolle(input_image, weight=0.2, multichannel=True)
 
 prediction = net.predict([input_image])  # predict takes any number of images, and formats them for the Caffe net automatically
 pclass = prediction[0].argmax()
