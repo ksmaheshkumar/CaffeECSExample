@@ -1,0 +1,142 @@
+
+# Try to install NVIDIA drivers on EC2 Ubuntu
+# NOT WORKING
+
+
+
+
+# Trying to run Caffe on EC2
+# Would be shorter if we had used Anaconda
+# did not get CUDA to work (could not apply driver)
+#
+# https://news.ycombinator.com/item?id=9749660
+# http://rocknrollnerd.github.io/ml/2015/05/27/leopard-sofa.html
+# http://nbviewer.ipython.org/github/BVLC/caffe/blob/master/examples/classification.ipynb
+# http://caffe.berkeleyvision.org/installation.html
+
+
+# Maybe try a g2.8xlarge instance (about $2.60 per hour)
+# OS: Ubuntu Server 14.04 LTS (HVM), SSD Volume Type - ami-5189a661
+
+# On your local machine, ssh to EC2 intance
+# ssh -i KEY.PEM  ubuntu@IPADDRESS
+
+
+# CUDA
+
+# FINALLY some Ubuntu/Debian CUDA instructions that are nearly current and work
+# Adapted from: http://vasir.net/blog/opencl/installing-cuda-opencl-pyopencl-on-aws-ec2
+sudo apt-get -y update 
+sudo apt-get -y install gcc
+# Some problems: http://askubuntu.com/questions/598383/insatlling-cuda-failed-to-add-gpgkey-at-http-cuda-repo-repos-gpgkey-to-apt-k
+wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_7.0-28_amd64.deb
+# From: http://askubuntu.com/questions/602386/cuda-6-5-failed-to-add-gpgkey-at-http-cuda-repo-repos-gpgkey-to-apt-keys
+# sudo apt-get -y --allow-unauthenticated install -f
+# sudo apt-get -y --purge remove cuda-repo-ubuntu1404 
+sudo dpkg -i cuda-repo-ubuntu1404_7.0-28_amd64.deb
+sudo apt-get -y update 
+sudo apt-get -y install cuda 
+sudo apt-get -y install opencl-headers python-pip python-dev python-numpy python-mako 
+# From: https://gridforums.nvidia.com/default/topic/375/grid-sdk-amazon_g2_instance_getting_started_guide_linux-document-is-out-of-date/
+sudo apt-get update
+# choose install package maintainers's versin
+sudo apt-get -y install  linux-image-generic linux-image-extra-virtual linux-headers-$(uname –r) linux-source*
+sudo apt-get -y install  build-essential gcc g++ gcc-multilib lib32z1 lib32ncurses5 lib32bz2-1.0 lib32stdc++6
+sudo apt-get -y install  unzip make pkg-config mesa-utils libgl1-mesa-glx libglu1-mesa libglu1-mesa-dev libglew-dev freeglut3-dev libx11-dev libxmu-dev libxi-dev libXxf86vm-dev ubuntu-desktop x11vnc xserver-xorg
+
+# error out here, give up
+
+sudo apt-get purge nvidia*
+sudo apt-get purge xserver-xorg-video-nouveau
+sudo update-initramfs -u
+sudo reboot
+# ssh -i KEY.PEM  ubuntu@IPADDRESS
+
+
+
+# Now on to Caffee
+
+# From: http://caffe.berkeleyvision.org/install_apt.html
+sudo apt-get -y  update
+sudo apt-get -y  install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libboost-all-dev libhdf5-serial-dev
+sudo apt-get -y  install libatlas-base-dev
+sudo apt-get -y install gfortran
+sudo apt-get -y  install libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler
+sudo apt-get -y  install python-dev
+
+# From: https://github.com/BVLC/caffe
+sudo apt-get -y  install git
+sudo apt-get -y  install emacs
+
+# From: http://rocknrollnerd.github.io/ml/2015/05/27/leopard-sofa.html
+# http://nbviewer.ipython.org/github/BVLC/caffe/blob/master/examples/classification.ipynb
+sudo apt-get -y install python-pip
+sudo pip install numpy matplotlib
+sudo pip install "ipython[all]"
+
+
+
+
+# From http://stackoverflow.com/questions/2213551/installing-scipy-with-pip
+sudo pip install cython
+sudo pip install scipy
+# From https://github.com/BVLC/caffe/issues/50
+sudo pip install scikit-image
+
+# From https://groups.google.com/forum/#!topic/caffe-users/9Q10WkpCGxs
+sudo pip install protobuf
+
+
+
+git clone https://github.com/BVLC/caffe.git
+export PYTHONPATH=/home/ubuntu/caffe/python:$PYTHONPATH
+# From: https://github.com/BVLC/caffe/issues/1988
+export LD_LIBRARY_PATH=/home/ubuntu/caffe/.build_release/lib/:$LD_LIBRARY_PATH
+
+export LD_LIBRARY_PATH=/usr/local/cuda-7.0/targets/x86_64-linux/lib/:$LD_LIBRARY_PATH
+
+git clone https://github.com/JohnMount/CaffeECSExample.git
+
+
+
+# From: http://caffe.berkeleyvision.org/installation.html#compilation
+cd caffe
+cp Makefile.config.example Makefile.config
+make all
+# make test
+# make runtest
+make pycaffe
+
+
+# Ingore 1394 warning
+# http://stackoverflow.com/questions/12689304/ctypes-error-libdc1394-error-failed-to-initialize-libdc1394
+
+# get model
+scripts/download_model_binary.py models/bvlc_reference_caffenet
+
+# to get codes:
+pushd data/ilsvrc12
+bash get_ilsvrc_aux.sh
+# look at synset_words.txt
+# fgrep -n crab synset_words.txt 
+# 119:n01978287 Dungeness crab, Cancer magister
+# 120:n01978455 rock crab, Cancer irroratus
+# 121:n01980166 fiddler crab
+# 122:n01981276 king crab, Alaska crab, Alaskan king crab, Alaska king crab, Paralithodes camtschatica
+# 126:n01986214 hermit crab
+popd
+
+cd examples
+cp ../../CaffeECSExample/qExample.py .
+# run example 
+python qExample.py
+
+
+# get a Java on
+sudo apt-get -y install default-jre
+sudo apt-get -y install default-jdk
+
+
+
+
+

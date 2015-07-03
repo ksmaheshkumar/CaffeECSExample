@@ -8,10 +8,10 @@
 # instance: g2.2xlarge
 # root volume: 32GB
 
-# ssh in: ssh -i /Volumes/Planning/Accounts/jmamzkp1.pem.txt ec2-user@PUBLICIP
+# ssh in: ssh -i KEY.PEM ec2-user@PUBLICIP
 sudo yum -y  update -y
 sudo reboot
-# ssh in: ssh -i /Volumes/Planning/Accounts/jmamzkp1.pem.txt ec2-user@PUBLICIP
+# ssh in: ssh -i KEY.PEM ec2-user@PUBLICIP
 sudo yum -y  groupinstall -y "Development tools"
 wget http://us.download.nvidia.com/XFree86/Linux-x86_64/352.21/NVIDIA-Linux-x86_64-352.21.run
 wget http://developer.download.nvidia.com/compute/cuda/7_0/Prod/local_installers/cuda_7.0.28_linux.run
