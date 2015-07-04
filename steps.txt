@@ -1,84 +1,100 @@
 
-# 6-20-2015
-#
-# Trying to run Caffe on EC2
-# Would be shorter if we had used Anaconda
-# did not get CUDA to work (could not apply driver)
-#
-# https://news.ycombinator.com/item?id=9749660
-# http://rocknrollnerd.github.io/ml/2015/05/27/leopard-sofa.html
-# http://nbviewer.ipython.org/github/BVLC/caffe/blob/master/examples/classification.ipynb
-# http://caffe.berkeleyvision.org/installation.html
+
 
 
 # Maybe try a g2.8xlarge instance (about $2.60 per hour)
 # OS: Ubuntu Server 14.04 LTS (HVM), SSD Volume Type - ami-5189a661
+# Must go to instance details to make sure you have more storage (I used 32GB)
 
 # On your local machine, ssh to EC2 intance
 # ssh -i KEY.PEM  ubuntu@IPADDRESS
 
 
-# ON EC2 instance, install the stuff you need
-# also copy the contents of this repository to your instance
+# get the machine up to date and make sure we have git and emacs
+# (Java is for my later use, not needed for Caffe)
+# ssh -i KEY.PEM  ubuntu@IPADDRESS
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y install git emacs default-jre default-jdk
 
 
 
-##  # CUDA did not work
-##  # From
-##  #  http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using_cluster_computing.html#gpu-operating-systems
-##  sudo apt-get -y update
-##  sudo reboot
-##  # from https://wiki.ubuntu.com/Kernel/BuildYourOwnKernel
-##  sudo apt-get -y install dpkg-dev
-##  sudo apt-get -y source linux-image-$(uname -r)
-##  sudo apt-get -y build-dep linux-image-$(uname -r)
-##  cd linux-3.13.0
-##  sudo chmod a+x debian/scripts/*
-##  sudo chmod a+x debian/scripts/misc/*
-##  sudo fakeroot debian/rules clean
-##  sudo fakeroot debian/rules binary-headers binary-generic
-##  sudo reboot
-##  sudo apt-get -y update
-##  #  For G2 instances I think the Nvidia URL is: http://us.download.nvidia.com/XFree86/Linux-x86_64/352.21/NVIDIA-Linux-x86_64-352.21.run
-##  wget http://us.download.nvidia.com/XFree86/Linux-x86_64/352.21/NVIDIA-Linux-x86_64-352.21.run
-##  sudo /bin/bash ./NVIDIA-Linux-x86_64-352.21.run 
-##  
-##  #  # From: http://askubuntu.com/questions/451672/installing-and-testing-cuda-in-ubuntu-14-04
-##  #  sudo apt-get -y install build-essential
-##  #  # From: https://developer.nvidia.com/cuda-downloads
-##  #  wget http://developer.download.nvidia.com/compute/cuda/7_0/Prod/local_installers/cuda_7.0.28_linux.run
-##  #  mkdir nvidia_installers
-##  #  sudo bash ./cuda_7.0.28_linux.run -extract=~/nvidia_installers
-##  #  sudo apt-get --purge remove nvidia-*
-##  #  cd ~/nvidia_installers
-##  #  sudo service lightdm stop
-##  #  sudo killall Xorg
-##  #  sudo ./NVIDIA-Linux-x86_64-346.46.run
-##  
+
+
+
+# Set up Nvidia drivers, CUDA, and maybey cuDNN
+# Finally found some correct instructions:
+#  https://github.com/BVLC/caffe/wiki/Install-Caffe-on-EC2-from-scratch-(Ubuntu,-CUDA-7,-cuDNN)
+
+# ssh -i KEY.PEM  ubuntu@IPADDRESS
+sudo apt-get -y install build-essential
+wget http://developer.download.nvidia.com/compute/cuda/7_0/Prod/local_installers/cuda_7.0.28_linux.run
+chmod +x cuda_7.0.28_linux.run
+mkdir nvidia_installers
+./cuda_7.0.28_linux.run -extract=`pwd`/nvidia_installers
+# in next step
+# If asked: GRUB: select "keep the local version currently installed"
+sudo apt-get -y install linux-image-extra-virtual
+printf "blacklist nouveau\nblacklist lbm-nouveau\noptions nouveau modeset=0\nalias nouveau off\nalias lbm-nouveau off\n" | sudo tee -a /etc/modprobe.d/blacklist-nouveau.conf
+printf "options nouveau modeset=0\n" | sudo tee -a /etc/modprobe.d/nouveau-kms.conf
+sudo update-initramfs -u
+sudo reboot
+
+# ssh -i KEY.PEM  ubuntu@IPADDRESS
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y install linux-source
+sudo apt-get -y install linux-headers-`uname -r`
+cd nvidia_installers
+# in next step
+# Accept, OK+
+# update X config: NO
+sudo ./NVIDIA-Linux-x86_64-346.46.run
+sudo modprobe nvidia
+sudo apt-get -y install build-essential
+# in next step "q" to get to end of license agreement
+# accept and pick defaults
+sudo ./cuda-linux64-rel-7.0.28-19326674.run
+# in next step "q" to get to end of license agreement
+# accept and pick defaults
+sudo ./cuda-samples-linux-7.0.28-19326674.run
+cd ..
+# add to ~/.bashrc
+printf 'export PATH=$PATH:/usr/local/cuda-7.0/bin\nexport LD_LIBRARY_PATH=:/usr/local/cuda-7.0/lib64\n' >> .bashrc
+source ~/.bashrc
+sudo apt-get -y update
+sudo apt-get -y upgrade
+nvidia-smi
+# actually ran next line later (after cython step), but should work here
+sudo apt-get install -y libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libboost-all-dev libhdf5-serial-dev protobuf-compiler gfortran libjpeg62 libfreeimage-dev libatlas-base-dev git python-dev python-pip libgoogle-glog-dev libbz2-dev libxml2-dev libxslt-dev libffi-dev libssl-dev libgflags-dev liblmdb-dev python-yaml python-numpy
+sudo reboot  # probably don't need this one
+
+# skipping this
+# need to register with Nvidia to get cudnn install
+# cuDNN
+# tar -zxf cudnn-6.5-linux-x64-v2.tgz
+# cd cudnn-6.5-linux-x64-v2
+# sudo cp lib* /usr/local/cuda/lib64/
+# sudo cp cudnn.h /usr/local/cuda/include/
+
+
+
+
 
 
 # From: http://caffe.berkeleyvision.org/install_apt.html
-sudo apt-get -y  update
-sudo apt-get -y  install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libboost-all-dev libhdf5-serial-dev
-sudo apt-get -y  install libatlas-base-dev
-sudo apt-get -y install gfortran
-sudo apt-get -y  install libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler
-sudo apt-get -y  install python-dev
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libboost-all-dev libhdf5-serial-dev libatlas-base-dev gfortran libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler python-dev python-pip
 
 # From: https://github.com/BVLC/caffe
-sudo apt-get -y  install git
-sudo apt-get -y  install emacs
 git clone https://github.com/BVLC/caffe.git
+export PYTHONPATH=/home/ubuntu/caffe/python:$PYTHONPATH
 
 # From: http://rocknrollnerd.github.io/ml/2015/05/27/leopard-sofa.html
 # http://nbviewer.ipython.org/github/BVLC/caffe/blob/master/examples/classification.ipynb
-sudo apt-get -y install python-pip
 sudo pip install numpy matplotlib
 sudo pip install "ipython[all]"
-
-
-export PYTHONPATH=/home/ubuntu/caffe/python:$PYTHONPATH
-
 
 # From http://stackoverflow.com/questions/2213551/installing-scipy-with-pip
 sudo pip install cython
@@ -89,28 +105,21 @@ sudo pip install scikit-image
 # From https://groups.google.com/forum/#!topic/caffe-users/9Q10WkpCGxs
 sudo pip install protobuf
 
-
-
-
-
 # From: https://github.com/BVLC/caffe/issues/1988
 export LD_LIBRARY_PATH=/home/ubuntu/caffe/.build_release/lib/:$LD_LIBRARY_PATH
 
-git clone https://github.com/JohnMount/CaffeECSExample.git
-
-
 # From: http://caffe.berkeleyvision.org/installation.html#compilation
 cd caffe
+cat python/requirements.txt | xargs -L 1 sudo pip install
 cp Makefile.config.example Makefile.config
-patch Makefile.config ../CaffeECSExample/Makefile.patch
-make all
-# make test
-# make runtest
-make pycaffe
-
-
-# Ingore 1394 warning
+make pycaffe -j8
+make all -j8
+make test -j8
+# Next step: ingore 1394 error/warning
 # http://stackoverflow.com/questions/12689304/ctypes-error-libdc1394-error-failed-to-initialize-libdc1394
+make runtest
+
+
 
 # get model
 scripts/download_model_binary.py models/bvlc_reference_caffenet
@@ -119,7 +128,7 @@ scripts/download_model_binary.py models/bvlc_reference_caffenet
 pushd data/ilsvrc12
 bash get_ilsvrc_aux.sh
 # look at synset_words.txt
-# fgrep -n crab synset_words.txt 
+# fgrep -in crab synset_words.txt 
 # 119:n01978287 Dungeness crab, Cancer magister
 # 120:n01978455 rock crab, Cancer irroratus
 # 121:n01980166 fiddler crab
@@ -127,15 +136,17 @@ bash get_ilsvrc_aux.sh
 # 126:n01986214 hermit crab
 popd
 
-cd examples
+
+
+# try an example
+cd
+git clone https://github.com/JohnMount/CaffeECSExample.git
+cd caffe/examples
 cp ../../CaffeECSExample/qExample.py .
 # run example 
 python qExample.py
 
 
-# get a Java on
-sudo apt-get -y install default-jre
-sudo apt-get -y install default-jdk
 
 
 

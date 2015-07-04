@@ -32,6 +32,6 @@ input_image = denoise_tv_chambolle(input_image, weight=0.2, multichannel=True)
 
 prediction = net.predict([input_image])  # predict takes any number of images, and formats them for the Caffe net automatically
 pclass = prediction[0].argmax()
-print 'predicted class:', pclass
+print 'predicted class:', pclass, prediction[0][pclass]
 print 'predicted class name:', content[pclass]
 
