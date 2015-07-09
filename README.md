@@ -7,7 +7,9 @@ See:
  * https://news.ycombinator.com/item?id=9749660
  * http://www.win-vector.com/blog/2015/06/neural-net-image-salad-again-with-code/
  
- 
+Should be good for applying:
+ * https://github.com/google/deepdream
+ * https://github.com/samim23/DeepDreamAnim
 
 To use:
  *  Start an EC2 instance

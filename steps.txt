@@ -150,5 +150,3 @@ python qExample.py
 
 
 
-
-
