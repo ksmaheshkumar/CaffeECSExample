@@ -9,8 +9,8 @@ Good for applying:
 
 To use:
  *  Start an EC2 instance 
-   * A g instance such as g2.8xlarge instance (about $2.60 per hour)
-   * OS: Ubuntu Server 14.04 LTS (HVM), SSD Volume Type - ami-5189a661
+   * A g instance such as g2.8xlarge instance (cheaper if you go for spot instances)
+   * OS: Ubuntu Server 14.04 LTS (HVM), SSD Volume Type - ami-5189a661 (Amazon's current offering)
    * Must go to instance details to make sure you have more storage (I used 64GB)
  *  Follow the many steps in steps.txt
 
