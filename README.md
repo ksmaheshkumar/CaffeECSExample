@@ -34,6 +34,7 @@ And to the authors of the referenced guides (credited where they are used in ste
 See also:
  * https://photos.google.com/share/AF1QipPX0SCl7OzWilt9LnuQliattX4OUCj_8EP65_cTVnBmS1jnYgsGQAieQUc1VQWdgQ?key=aVBxWjhwSzg2RjJWLWRuVFBBZEN1d205bUdEMnhB
  * https://github.com/BVLC/caffe/wiki/Install-Caffe-on-EC2-from-scratch-(Ubuntu,-CUDA-7,-cuDNN)
+ * https://github.com/graphific/DeepDreamVideo
  * http://rocknrollnerd.github.io/ml/2015/05/27/leopard-sofa.html
  * https://news.ycombinator.com/item?id=9749660
  * http://www.win-vector.com/blog/2015/06/neural-net-image-salad-again-with-code/
