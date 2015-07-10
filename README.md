@@ -17,3 +17,4 @@ To use:
  *  Start an EC2 instance
  *  Follow the many steps in steps.txt
 
+![Example image](exampleImg.jpeg)
