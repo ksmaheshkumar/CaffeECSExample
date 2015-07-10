@@ -16,11 +16,14 @@ To use:
 
 ![Example image](exampleImg.jpeg)
 
-Credit to the original authors
+Credit to the original deep dream inception authors
  * Alexander Mordvintsev
  * Christopher Olah
  * Mike Tyka
  * http://googleresearch.blogspot.ch/2015/06/inceptionism-going-deeper-into-neural.html
+
+To the Caffe project
+ * http://caffe.berkeleyvision.org
 
 And to the authors of the referenced guides.
 
