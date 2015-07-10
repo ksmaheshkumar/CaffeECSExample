@@ -89,6 +89,7 @@ sudo apt-get -y install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-d
 
 # From: https://github.com/BVLC/caffe
 git clone https://github.com/BVLC/caffe.git
+printf 'export PYTHONPATH=/home/ubuntu/caffe/python:$PYTHONPATH\n' >> ~/.bashrc
 export PYTHONPATH=/home/ubuntu/caffe/python:$PYTHONPATH
 
 # From: http://rocknrollnerd.github.io/ml/2015/05/27/leopard-sofa.html
@@ -106,6 +107,7 @@ sudo pip install scikit-image
 sudo pip install protobuf
 
 # From: https://github.com/BVLC/caffe/issues/1988
+printf 'export LD_LIBRARY_PATH=/home/ubuntu/caffe/.build_release/lib/:$LD_LIBRARY_PATH\n' >> ~/.bashrc
 export LD_LIBRARY_PATH=/home/ubuntu/caffe/.build_release/lib/:$LD_LIBRARY_PATH
 
 # From: http://caffe.berkeleyvision.org/installation.html#compilation
@@ -121,13 +123,12 @@ make runtest
 
 
 
-# get model
+# get a model
 scripts/download_model_binary.py models/bvlc_reference_caffenet
-
 # to get codes:
 pushd data/ilsvrc12
 bash get_ilsvrc_aux.sh
-# look at synset_words.txt
+# look at synset_words.txt (remember grep numbers from 1, arrays from zero)
 # fgrep -in crab synset_words.txt 
 # 119:n01978287 Dungeness crab, Cancer magister
 # 120:n01978455 rock crab, Cancer irroratus
@@ -136,15 +137,126 @@ bash get_ilsvrc_aux.sh
 # 126:n01986214 hermit crab
 popd
 
-
-
-# try an example
+# try an example (classifies a kitten as a Chihuahua)
 cd
 git clone https://github.com/JohnMount/CaffeECSExample.git
 cd caffe/examples
 cp ../../CaffeECSExample/qExample.py .
 # run example 
 python qExample.py
+
+
+# install ffmpeg
+# from: https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu
+sudo apt-get -y --force-yes install autoconf automake build-essential libass-dev libfreetype6-dev libsdl1.2-dev libtheora-dev libtool libva-dev libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev pkg-config texi2html zlib1g-dev
+mkdir ~/ffmpeg_sources
+# Yasm
+sudo apt-get -y install yasm
+# libx264
+cd ~/ffmpeg_sources
+wget http://download.videolan.org/pub/x264/snapshots/last_x264.tar.bz2
+tar xjvf last_x264.tar.bz2
+cd x264-snapshot*
+PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --enable-static
+PATH="$HOME/bin:$PATH" make
+sudo make install
+make distclean
+# libx265
+cd ~/ffmpeg_sources
+sudo apt-get -y install cmake mercurial
+hg clone https://bitbucket.org/multicoreware/x265
+cd ~/ffmpeg_sources/x265/build/linux
+PATH="$HOME/bin:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED:bool=off ../../source
+make
+sudo make install
+# libfdk-aac
+cd ~/ffmpeg_sources
+wget -O fdk-aac.tar.gz https://github.com/mstorsjo/fdk-aac/tarball/master
+tar xzvf fdk-aac.tar.gz
+cd mstorsjo-fdk-aac*
+autoreconf -fiv
+./configure --prefix="$HOME/ffmpeg_build" --disable-shared
+make
+sudo make install
+make distclean
+# libmp3lame
+cd ~/ffmpeg_sources
+sudo apt-get -y install libmp3lame-dev
+# libopus
+cd ~/ffmpeg_sources
+sudo apt-get -y install libopus-dev
+# libvpx
+cd ~/ffmpeg_sources
+wget http://webm.googlecode.com/files/libvpx-v1.3.0.tar.bz2
+tar xjvf libvpx-v1.3.0.tar.bz2
+cd libvpx-v1.3.0
+PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests
+PATH="$HOME/bin:$PATH" make
+sudo make install
+make clean
+
+# ffmpeg
+cd ~/ffmpeg_sources
+wget http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2
+tar xjvf ffmpeg-snapshot.tar.bz2
+cd ffmpeg
+PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure \
+  --prefix="$HOME/ffmpeg_build" \
+  --pkg-config-flags="--static" \
+  --extra-cflags="-I$HOME/ffmpeg_build/include" \
+  --extra-ldflags="-L$HOME/ffmpeg_build/lib" \
+  --bindir="$HOME/bin" \
+  --enable-gpl \
+  --enable-libass \
+  --enable-libfdk-aac \
+  --enable-libfreetype \
+  --enable-libmp3lame \
+  --enable-libopus \
+  --enable-libtheora \
+  --enable-libvorbis \
+  --enable-libvpx \
+  --enable-libx264 \
+  --enable-libx265 \
+  --enable-nonfree
+PATH="$HOME/bin:$PATH" make
+sudo make install
+make distclean
+cd
+export PATH="/home/ubuntu/bin:$PATH"
+printf 'export PATH="/home/ubuntu/bin:$PATH"\n' >> .bashrc
+hash -r
+
+
+
+
+
+# try the Inception effects
+# From:
+#   https://github.com/google/deepdream
+#   https://github.com/samim23/DeepDreamAnim
+cd
+git clone https://github.com/google/deepdream.git
+git clone https://github.com/samim23/DeepDreamAnim.git
+
+cd
+wget http://dl.caffe.berkeleyvision.org/bvlc_googlenet.caffemodel
+mv bvlc_googlenet.caffemodel caffe/models/bvlc_googlenet/net.caffemodel
+# change model path to path to our model
+cp DeepDreamAnim/dreamer.py .
+patch dreamer.py CaffeECSExample/dreamAnim.patch 
+
+
+cd
+mkdir myvideo
+# on a remote machine
+# scp -i KEY.PEM  VIDEO.mp4 ubuntu@IPADDRESS:myvideo/video.mp4
+python dreamer.py --input myvideo/video.mp4 --output myvideo --extract 1
+# next step can take a while!
+nohup python dreamer.py --input myvideo --output frames > runLog.txt 2>&1 &
+# only after previous step finishes
+python dreamer.py --input frames --output myvideo/deepdreamvideo.mp4 --create 1
+# copy back to your own machine
+# scp -i KEY.PEM ubuntu@IPADDRESS:myvideo/deepdreamvideo.mp4 deepdreamvideo.mp4
 
 
 

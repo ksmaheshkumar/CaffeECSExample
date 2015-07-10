@@ -1,6 +1,8 @@
 
 Trying to run Caffe on EC2
 
+Now has complete instructions to configure an Ubunty EC2 g-instance up to have Caffee and ffmpeg which is enough to create deep dream inception videos.
+
 See:
  * https://github.com/BVLC/caffe/wiki/Install-Caffe-on-EC2-from-scratch-(Ubuntu,-CUDA-7,-cuDNN)
  * http://rocknrollnerd.github.io/ml/2015/05/27/leopard-sofa.html
@@ -13,6 +15,5 @@ Should be good for applying:
 
 To use:
  *  Start an EC2 instance
- *  Copy contents of this repository onto instance ( git clone https://github.com/JohnMount/CaffeECSExample.git )
  *  Follow the many steps in steps.txt
 

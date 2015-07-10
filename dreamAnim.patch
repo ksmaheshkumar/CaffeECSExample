@@ -1,0 +1,11 @@
+--- DeepDreamAnim/dreamer.py	2015-07-10 15:33:02.134395000 +0000
++++ dreamer.py	2015-07-10 15:47:09.946395000 +0000
+@@ -23,7 +23,7 @@
+ # model_name = 'placesCNN+'
+ # model_name = 'vggf'
+ # model_name = 'flowers'
+-model_path = '/Users/samim/caffe/models/' + model_name + '/'
++model_path = '/home/ubuntu/caffe/models/' + model_name + '/'
+ net_fn   = model_path + 'deploy.prototxt'
+ param_fn = model_path + 'net.caffemodel'
+ 
