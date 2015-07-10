@@ -25,6 +25,10 @@ Credit to the original deep dream inception authors:
 To the Caffe project:
  * http://caffe.berkeleyvision.org
 
+An alternative is a ready to go Docker image (I have not tested this):
+ * https://github.com/VISIONAI/clouddream
+
+
 And to the authors of the referenced guides (credited where they are used in steps.txt).
 
 See also:
@@ -34,4 +38,5 @@ See also:
  * https://news.ycombinator.com/item?id=9749660
  * http://www.win-vector.com/blog/2015/06/neural-net-image-salad-again-with-code/
  * https://www.reddit.com/r/deepdream/
+ * https://news.ycombinator.com/item?id=9865398
 
