@@ -14,7 +14,10 @@ Should be good for applying:
  * https://github.com/samim23/DeepDreamAnim
 
 To use:
- *  Start an EC2 instance
+ *  Start an EC2 instance 
+   * A g instance such as g2.8xlarge instance (about $2.60 per hour)
+   * OS: Ubuntu Server 14.04 LTS (HVM), SSD Volume Type - ami-5189a661
+   * Must go to instance details to make sure you have more storage (I used 64GB)
  *  Follow the many steps in steps.txt
 
 ![Example image](exampleImg.jpeg)
