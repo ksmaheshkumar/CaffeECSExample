@@ -16,16 +16,16 @@ To use:
 
 ![Example image](exampleImg.jpeg)
 
-Credit to the original deep dream inception authors
+Credit to the original deep dream inception authors:
  * Alexander Mordvintsev
  * Christopher Olah
  * Mike Tyka
  * http://googleresearch.blogspot.ch/2015/06/inceptionism-going-deeper-into-neural.html
 
-To the Caffe project
+To the Caffe project:
  * http://caffe.berkeleyvision.org
 
-And to the authors of the referenced guides.
+And to the authors of the referenced guides (credited where they are used in steps.txt).
 
 See also:
  * https://photos.google.com/share/AF1QipPX0SCl7OzWilt9LnuQliattX4OUCj_8EP65_cTVnBmS1jnYgsGQAieQUc1VQWdgQ?key=aVBxWjhwSzg2RjJWLWRuVFBBZEN1d205bUdEMnhB
@@ -33,3 +33,5 @@ See also:
  * http://rocknrollnerd.github.io/ml/2015/05/27/leopard-sofa.html
  * https://news.ycombinator.com/item?id=9749660
  * http://www.win-vector.com/blog/2015/06/neural-net-image-salad-again-with-code/
+ * https://www.reddit.com/r/deepdream/
+
